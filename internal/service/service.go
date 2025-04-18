@@ -2,8 +2,10 @@ package service
 
 import (
 	"encoding/json"
+
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
+
 	"simple-service/internal/dto"
 	"simple-service/internal/repo"
 	"simple-service/pkg/validator"
@@ -14,6 +16,7 @@ import (
 // Service - интерфейс для бизнес-логики
 type Service interface {
 	CreateTask(ctx *fiber.Ctx) error
+	GetTask(ctx *fiber.Ctx) error
 }
 
 type service struct {
@@ -59,6 +62,31 @@ func (s *service) CreateTask(ctx *fiber.Ctx) error {
 	response := dto.Response{
 		Status: "success",
 		Data:   map[string]int{"task_id": taskID},
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+// GetTask - обработчик запроса на доступ к задаче по id
+func (s *service) GetTask(ctx *fiber.Ctx) error {
+	// Полиучение параметра id из URI
+	id, err := ctx.ParamsInt("id")
+	if err != nil {
+		s.log.Error("Invalid task id(not int)", zap.Error(err))
+		return dto.BadResponseError(ctx, dto.FieldBadFormat, "Invalid ID format")
+	}
+
+	// Получение задачи из БД через репозиторий
+	task, err := s.repo.GetTask(ctx.Context(), id)
+	if err != nil {
+		s.log.Error("Failed to retrive task", zap.Error(err))
+		return dto.NotFoundError(ctx, "Task not found")
+	}
+
+	// Формирование ответа
+	response := dto.Response{
+		Status: "success",
+		Data:   task,
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)
