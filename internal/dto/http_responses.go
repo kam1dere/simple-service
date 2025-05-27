@@ -9,6 +9,7 @@ import (
 const (
 	FieldBadFormat     = "FIELD_BADFORMAT"
 	FieldIncorrect     = "FIELD_INCORRECT"
+	NotFound           = "NOT_FOUND"
 	ServiceUnavailable = "SERVICE_UNAVAILABLE"
 	InternalError      = "Service is currently unavailable. Please try again later."
 )
@@ -40,6 +41,16 @@ func InternalServerError(ctx *fiber.Ctx) error {
 		Error: &Error{
 			Code: ServiceUnavailable,
 			Desc: InternalError,
+		},
+	})
+}
+
+func NotFoundError(ctx *fiber.Ctx, desc string) error {
+	return ctx.Status(fiber.StatusNotFound).JSON(Response{
+		Status: "error",
+		Error: &Error{
+			Code: NotFound,
+			Desc: desc,
 		},
 	})
 }
