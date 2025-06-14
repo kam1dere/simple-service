@@ -25,6 +25,8 @@ type repository struct {
 // Repository - интерфейс с методом создания задачи
 type Repository interface {
 	CreateTask(ctx context.Context, task Task) (int, error) // Создание задачи
+	GetTasks(ctx context.Context) ([]GetTask, error)
+	GetTaskByID(ctx context.Context, id int) (*GetTask, error)
 }
 
 // NewRepository - создание нового экземпляра репозитория с подключением к PostgreSQL
@@ -70,4 +72,44 @@ func (r *repository) CreateTask(ctx context.Context, task Task) (int, error) {
 		return 0, errors.Wrap(err, "failed to insert task")
 	}
 	return id, nil
+}
+
+func (r *repository) GetTasks(ctx context.Context) ([]GetTask, error) {
+	rows, err := r.pool.Query(ctx, `SELECT id, title, description, status, created_at, updated_at FROM tasks ORDER BY id`)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to query tasks")
+	}
+	defer rows.Close()
+
+	var tasks []GetTask
+
+	for rows.Next() {
+		var t GetTask
+		err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.Status, &t.CreatedAt, &t.UpdatedAt)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to scan task row")
+		}
+		tasks = append(tasks, t)
+	}
+
+	if rows.Err() != nil {
+		return nil, errors.Wrap(rows.Err(), "rows iteration error")
+	}
+
+	return tasks, nil
+}
+
+func (r *repository) GetTaskByID(ctx context.Context, id int) (*GetTask, error) {
+	var t GetTask
+	err := r.pool.QueryRow(ctx,
+		`SELECT id, title, description, status, created_at, updated_at FROM tasks WHERE id = $1`, id).
+		Scan(&t.ID, &t.Title, &t.Description, &t.Status, &t.CreatedAt, &t.UpdatedAt)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil // не нашли задачу
+		}
+		return nil, err
+	}
+	return &t, nil
 }
