@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -14,6 +15,7 @@ import (
 // Service - интерфейс для бизнес-логики
 type Service interface {
 	CreateTask(ctx *fiber.Ctx) error
+	GetTaskByID(ctx context.Context, id int) (*repo.Task, error)
 }
 
 type service struct {
@@ -62,4 +64,17 @@ func (s *service) CreateTask(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+func (s *service) GetTaskByID(ctx context.Context, id int) (*repo.Task, error) {
+	task, err := s.repo.GetTaskByID(ctx, id)
+	if err != nil {
+		s.log.Error("Failed to get task by ID", zap.Int("id", id), zap.Error(err))
+		return nil, err
+	}
+	if task == nil {
+		s.log.Info("Task not found", zap.Int("id", id))
+		return nil, nil // Возвращаем nil для обработки 404 в API
+	}
+	return task, nil
 }
