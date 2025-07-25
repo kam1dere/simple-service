@@ -2,6 +2,7 @@ package dto
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"time"
 )
 
 // DTO  некоторых компаниях используется такой подход
@@ -17,6 +18,15 @@ type Response struct {
 	Status string `json:"status"`
 	Error  *Error `json:"error,omitempty"`
 	Data   any    `json:"data,omitempty"`
+}
+
+type TaskResponse struct {
+	Id          int       `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Status      string    `json:"status"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 type Error struct {

@@ -7,6 +7,7 @@ import (
 	"simple-service/internal/dto"
 	"simple-service/internal/repo"
 	"simple-service/pkg/validator"
+	"strconv"
 )
 
 // Слой бизнес-логики. Тут должна быть основная логика сервиса
@@ -14,6 +15,7 @@ import (
 // Service - интерфейс для бизнес-логики
 type Service interface {
 	CreateTask(ctx *fiber.Ctx) error
+	GetTaskById(ctx *fiber.Ctx) error
 }
 
 type service struct {
@@ -59,6 +61,42 @@ func (s *service) CreateTask(ctx *fiber.Ctx) error {
 	response := dto.Response{
 		Status: "success",
 		Data:   map[string]int{"task_id": taskID},
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+// GetTaskById - обработчик запроса на получение задачи по id
+func (s *service) GetTaskById(ctx *fiber.Ctx) error {
+	// Получаем id из пути
+	id := ctx.Params("id")
+
+	// Проверка на пустой id
+	if id == "" {
+		return dto.BadResponseError(ctx, dto.FieldBadFormat, "Invalid id")
+	}
+
+	// Конвертация id в int
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		return dto.BadResponseError(ctx, dto.FieldBadFormat, "Invalid id")
+	}
+
+	// Получение задачи из БД через репозиторий
+	task, err := s.repo.GetTaskById(ctx.Context(), idInt)
+	if err != nil {
+		s.log.Error("Failed to get task", zap.Error(err))
+		return dto.InternalServerError(ctx)
+	}
+
+	// Формирование ответа
+	response := dto.TaskResponse{
+		Id:          task.Id,
+		Title:       task.Title,
+		Description: task.Description,
+		Status:      task.Status,
+		CreatedAt:   task.CreatedAt,
+		UpdatedAt:   task.UpdatedAt,
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)
