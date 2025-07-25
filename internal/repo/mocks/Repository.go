@@ -14,6 +14,14 @@ type Repository struct {
 	mock.Mock
 }
 
+type Repository_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *Repository) EXPECT() *Repository_Expecter {
+	return &Repository_Expecter{mock: &_m.Mock}
+}
+
 // CreateTask provides a mock function with given fields: ctx, task
 func (_m *Repository) CreateTask(ctx context.Context, task repo.Task) (int, error) {
 	ret := _m.Called(ctx, task)
@@ -40,6 +48,92 @@ func (_m *Repository) CreateTask(ctx context.Context, task repo.Task) (int, erro
 	}
 
 	return r0, r1
+}
+
+// Repository_CreateTask_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateTask'
+type Repository_CreateTask_Call struct {
+	*mock.Call
+}
+
+// CreateTask is a helper method to define mock.On call
+//   - ctx context.Context
+//   - task repo.Task
+func (_e *Repository_Expecter) CreateTask(ctx interface{}, task interface{}) *Repository_CreateTask_Call {
+	return &Repository_CreateTask_Call{Call: _e.mock.On("CreateTask", ctx, task)}
+}
+
+func (_c *Repository_CreateTask_Call) Run(run func(ctx context.Context, task repo.Task)) *Repository_CreateTask_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(repo.Task))
+	})
+	return _c
+}
+
+func (_c *Repository_CreateTask_Call) Return(_a0 int, _a1 error) *Repository_CreateTask_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Repository_CreateTask_Call) RunAndReturn(run func(context.Context, repo.Task) (int, error)) *Repository_CreateTask_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetTaskById provides a mock function with given fields: ctx, id
+func (_m *Repository) GetTaskById(ctx context.Context, id int) (repo.TaskInfo, error) {
+	ret := _m.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetTaskById")
+	}
+
+	var r0 repo.TaskInfo
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int) (repo.TaskInfo, error)); ok {
+		return rf(ctx, id)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int) repo.TaskInfo); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(repo.TaskInfo)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Repository_GetTaskById_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetTaskById'
+type Repository_GetTaskById_Call struct {
+	*mock.Call
+}
+
+// GetTaskById is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id int
+func (_e *Repository_Expecter) GetTaskById(ctx interface{}, id interface{}) *Repository_GetTaskById_Call {
+	return &Repository_GetTaskById_Call{Call: _e.mock.On("GetTaskById", ctx, id)}
+}
+
+func (_c *Repository_GetTaskById_Call) Run(run func(ctx context.Context, id int)) *Repository_GetTaskById_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int))
+	})
+	return _c
+}
+
+func (_c *Repository_GetTaskById_Call) Return(_a0 repo.TaskInfo, _a1 error) *Repository_GetTaskById_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Repository_GetTaskById_Call) RunAndReturn(run func(context.Context, int) (repo.TaskInfo, error)) *Repository_GetTaskById_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewRepository creates a new instance of Repository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
