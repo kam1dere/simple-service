@@ -122,7 +122,7 @@ func TestGetTaskById(t *testing.T) {
 
 	t.Run("успешное получение задачи", func(t *testing.T) {
 		var id int = 1
-		expectedTask := repo.TaskInfo{
+		expectedTask := repo.Task{
 			Id:          id,
 			Title:       "Test Task",
 			Description: "Test Description",
@@ -180,7 +180,7 @@ func TestGetTaskById(t *testing.T) {
 	})
 
 	t.Run("ошибка получения задачи из БД", func(t *testing.T) {
-		mockRepo.On("GetTaskById", mock.Anything, 2).Return(repo.TaskInfo{}, errors.New("db error")).Once()
+		mockRepo.On("GetTaskById", mock.Anything, 2).Return(repo.Task{}, errors.New("db error")).Once()
 
 		req, err := http.NewRequest("GET", "/task/2", nil)
 		assert.NoError(t, err)

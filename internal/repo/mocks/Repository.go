@@ -80,22 +80,22 @@ func (_c *Repository_CreateTask_Call) RunAndReturn(run func(context.Context, rep
 }
 
 // GetTaskById provides a mock function with given fields: ctx, id
-func (_m *Repository) GetTaskById(ctx context.Context, id int) (repo.TaskInfo, error) {
+func (_m *Repository) GetTaskById(ctx context.Context, id int) (repo.Task, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetTaskById")
 	}
 
-	var r0 repo.TaskInfo
+	var r0 repo.Task
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int) (repo.TaskInfo, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) (repo.Task, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int) repo.TaskInfo); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) repo.Task); ok {
 		r0 = rf(ctx, id)
 	} else {
-		r0 = ret.Get(0).(repo.TaskInfo)
+		r0 = ret.Get(0).(repo.Task)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
@@ -126,12 +126,12 @@ func (_c *Repository_GetTaskById_Call) Run(run func(ctx context.Context, id int)
 	return _c
 }
 
-func (_c *Repository_GetTaskById_Call) Return(_a0 repo.TaskInfo, _a1 error) *Repository_GetTaskById_Call {
+func (_c *Repository_GetTaskById_Call) Return(_a0 repo.Task, _a1 error) *Repository_GetTaskById_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *Repository_GetTaskById_Call) RunAndReturn(run func(context.Context, int) (repo.TaskInfo, error)) *Repository_GetTaskById_Call {
+func (_c *Repository_GetTaskById_Call) RunAndReturn(run func(context.Context, int) (repo.Task, error)) *Repository_GetTaskById_Call {
 	_c.Call.Return(run)
 	return _c
 }
